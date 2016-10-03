@@ -37,4 +37,8 @@ class User extends Authenticatable
     public function availabilities() {
         return $this->hasMany('App\Availability');
     }
+
+    public function schedules() {
+        return $this->hasMany('App\Schedule');
+    }
 }

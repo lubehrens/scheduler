@@ -15,6 +15,12 @@ $api->version('v1', function ($api) {
 		$api->get('availability/show/{id}', 'App\Api\V1\Controllers\AvailabilityController@show');
 		$api->put('availability/update/{id}', 'App\Api\V1\Controllers\AvailabilityController@update');
 		$api->delete('availability/destroy/{id}', 'App\Api\V1\Controllers\AvailabilityController@destroy');
+
+		$api->get('schedule', 'App\Api\V1\Controllers\ScheduleController@index');
+		$api->post('schedule/store', 'App\Api\V1\Controllers\ScheduleController@store');
+		$api->get('schedule/show/{id}', 'App\Api\V1\Controllers\ScheduleController@show');
+		$api->put('schedule/update/{id}', 'App\Api\V1\Controllers\ScheduleController@update');
+		$api->delete('schedule/destroy/{id}', 'App\Api\V1\Controllers\ScheduleController@destroy');
 	});
 
 
