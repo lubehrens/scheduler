@@ -33,6 +33,10 @@ class ScheduleController extends Controller
     	$schedule->end = $request->get('end');
     	$schedule->doctor_id = $request->get('doctor_id');
 
+        if($schedule->begin >= $schedule->end) {
+            return $this->response->error('inicio_maior_igual_fim',500);
+        }
+
     	if($currentUser->schedules()->save($schedule)) {
     		return $this->response->created();
     	}
