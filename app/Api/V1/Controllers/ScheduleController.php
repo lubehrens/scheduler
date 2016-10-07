@@ -5,6 +5,7 @@ namespace App\Api\V1\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use JWTAuth;
+use Validator;
 use App\Schedule;
 use App\Http\Controllers\Controller;
 use Dingo\Api\Routing\Helpers;
@@ -27,21 +28,44 @@ class ScheduleController extends Controller
     public function store(Request $request) {
     	$currentUser = JWTAuth::parseToken()->authenticate();
 
-    	$schedule = new Schedule;
+        $schedule = new Schedule;
 
-    	$schedule->begin = $request->get('begin');
-    	$schedule->end = $request->get('end');
-    	$schedule->doctor_id = $request->get('doctor_id');
+        $schedule->begin = $request->get('begin');
+        $schedule->end = $request->get('end');
+        $schedule->doctor_id = $request->get('doctor_id');
 
         if($schedule->begin >= $schedule->end) {
-            return $this->response->error('inicio_maior_igual_fim',500);
+            return $this->response->error('error_begin_after_equal_end',500);
+        }
+
+        //if NOT get disponibilidade antes do inicio e depois do fim datas return
+        $isAvailable = $currentUser
+                        ->availabilities()
+                        ->where('doctor_id',$schedule->doctor_id)
+                        ->where('begin','<=',$schedule->begin)
+                        ->where('end','=>',$schedule->end)
+                        ->get()
+                        ->toArray();
+        if(!$isAvailable) {
+            return $this->response->error('doctor_not_available',500);
+        }
+
+        //if get escala durante datas return
+        $hasSchedule = $currentUser
+                        ->schedules()
+                        ->where('begin','<=',$schedule->begin)
+                        ->where('end','=>',$schedule->end)
+                        ->get()
+                        ->toArray();
+        if(!$isAvailable) {
+            return $this->response->error('doctor_not_available',500);
         }
 
     	if($currentUser->schedules()->save($schedule)) {
     		return $this->response->created();
     	}
     	else {
-    		return $this->response->error('erro_criar_escala',500);
+    		return $this->response->error('error_create_schedule',500);
     	}
     }
 
@@ -71,7 +95,7 @@ class ScheduleController extends Controller
 	        return $this->response->noContent();
 	    }
 	    else {
-	        return $this->response->error('erro_atualizar_escala', 500);
+	        return $this->response->error('error_update_schedule', 500);
 	    }
     }
 
@@ -88,7 +112,7 @@ class ScheduleController extends Controller
 	        return $this->response->noContent();
 	    }
 	    else {
-	        return $this->response->error('erro_excluir_escala', 500);
+	        return $this->response->error('error_destroy_schedule', 500);
 	    }
     }
 }

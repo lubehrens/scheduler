@@ -5,11 +5,14 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', function ($api) {
 
 	$api->post('auth/login', 'App\Api\V1\Controllers\AuthController@login');
-	$api->post('auth/signup', 'App\Api\V1\Controllers\AuthController@signup');
+	// $api->post('auth/signup', 'App\Api\V1\Controllers\AuthController@signup');
 	$api->post('auth/recovery', 'App\Api\V1\Controllers\AuthController@recovery');
 	$api->post('auth/reset', 'App\Api\V1\Controllers\AuthController@reset');
 
 	$api->group(['middleware' => 'api.auth'], function ($api) {
+		$api->get('user', 'App\Api\V1\Controllers\UserController@index');
+		$api->post('user/store', 'App\Api\V1\Controllers\UserController@store');
+
 		$api->get('availability', 'App\Api\V1\Controllers\AvailabilityController@index');
 		$api->post('availability/store', 'App\Api\V1\Controllers\AvailabilityController@store');
 		$api->get('availability/show/{id}', 'App\Api\V1\Controllers\AvailabilityController@show');

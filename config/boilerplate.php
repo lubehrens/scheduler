@@ -13,7 +13,7 @@ return [
     |
     */
     'signup_fields' => [
-        'name', 'email', 'password', 'admin'
+        'name', 'email', 'password'
     ],
 
     /*
@@ -41,7 +41,7 @@ return [
     | success message.
     |
     */
-    'signup_token_release' => env('API_SIGNUP_TOKEN_RELEASE', true),
+    'signup_token_release' => env('API_SIGNUP_TOKEN_RELEASE', false),
 
     /*
     |--------------------------------------------------------------------------
