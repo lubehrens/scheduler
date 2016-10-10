@@ -46,6 +46,35 @@ class UserController extends Controller
             return $this->response->error('could_not_create_user', 500);
         }
 
+        $data = ['email' => $userData['email'], 'password' => $password, 'link' => 'http://escalador.sagg.com.br'];
+        \Mail::send('user_created', $data, function ($message) use ($data) {
+     
+            $message->from('no-reply@sagg.com.br', 'Escalador SAGG');
+     
+            $message->to($data['email'])->subject('[Escalador SAGG | Cadastro realizado');
+     
+        });
+
         return $this->response->created();
+    }
+
+    public function destroy($id) {
+        $user = User::find($id);
+
+        if(!$user) {
+            throw new NotFoundHttpException;
+        }
+
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        if($currentUser->id == $id) {
+            return $this->response->error('cant_destroy_yourself', 500);
+        }
+
+        if($user->delete()) {
+            return $this->response->noContent();
+        }
+        else {
+            return $this->response->error('error_destroy_user', 500);
+        }
     }
 }
